@@ -1,17 +1,19 @@
 package com.ober.springmongorecipeapp.services;
 
+import com.ober.springmongorecipeapp.bootstrap.RecipeBootstrap;
 import com.ober.springmongorecipeapp.commands.RecipeCommand;
 import com.ober.springmongorecipeapp.converters.RecipeCommandToRecipe;
 import com.ober.springmongorecipeapp.converters.RecipeToRecipeCommand;
 import com.ober.springmongorecipeapp.domain.Recipe;
+import com.ober.springmongorecipeapp.repositories.CategoryRepository;
 import com.ober.springmongorecipeapp.repositories.RecipeRepository;
-import org.junit.Ignore;
+import com.ober.springmongorecipeapp.repositories.UnitOfMeasureRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,14 +30,29 @@ public class RecipeServiceIT {
     RecipeRepository recipeRepository;
 
     @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    UnitOfMeasureRepository unitOfMeasureRepository;
+
+    @Autowired
     RecipeCommandToRecipe recipeCommandToRecipe;
 
     @Autowired
     RecipeToRecipeCommand recipeToRecipeCommand;
 
-    @Transactional
+    @Before
+    public void setUp() throws Exception {
+        recipeRepository.deleteAll();
+        unitOfMeasureRepository.deleteAll();
+        categoryRepository.deleteAll();
+
+        RecipeBootstrap recipeBootstrap = new RecipeBootstrap(categoryRepository, recipeRepository, unitOfMeasureRepository);
+
+        recipeBootstrap.onApplicationEvent(null);
+    }
+
     @Test
-    @Ignore
     public void testSaveOfDescription() throws Exception {
         // given
         Iterable<Recipe> recipes = recipeRepository.findAll();
