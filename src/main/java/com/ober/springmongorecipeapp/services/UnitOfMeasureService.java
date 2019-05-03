@@ -1,11 +1,10 @@
 package com.ober.springmongorecipeapp.services;
 
 import com.ober.springmongorecipeapp.commands.UnitOfMeasureCommand;
-
-import java.util.Set;
+import reactor.core.publisher.Flux;
 
 public interface UnitOfMeasureService {
 
-    Set<UnitOfMeasureCommand> listAllUoms();
+    Flux<UnitOfMeasureCommand> listAllUoms();
 
 }
