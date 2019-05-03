@@ -2,6 +2,9 @@ package com.ober.springmongorecipeapp.repositories;
 
 import com.ober.springmongorecipeapp.bootstrap.RecipeBootstrap;
 import com.ober.springmongorecipeapp.domain.UnitOfMeasure;
+import com.ober.springmongorecipeapp.repositories.reactive.CategoryReactiveRepository;
+import com.ober.springmongorecipeapp.repositories.reactive.RecipeReactiveRepository;
+import com.ober.springmongorecipeapp.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +21,15 @@ import static org.junit.Assert.assertEquals;
 public class UnitOfMeasureRepositoryIT {
 
     @Autowired
+    CategoryReactiveRepository categoryReactiveRepository;
+
+    @Autowired
+    RecipeReactiveRepository recipeReactiveRepository;
+
+    @Autowired
+    UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
+
+    @Autowired
     UnitOfMeasureRepository unitOfMeasureRepository;
 
     @Autowired
@@ -32,7 +44,8 @@ public class UnitOfMeasureRepositoryIT {
         unitOfMeasureRepository.deleteAll();
         categoryRepository.deleteAll();
 
-        RecipeBootstrap recipeBootstrap = new RecipeBootstrap(categoryRepository, recipeRepository, unitOfMeasureRepository);
+        RecipeBootstrap recipeBootstrap = new RecipeBootstrap(categoryReactiveRepository,
+                recipeReactiveRepository, unitOfMeasureReactiveRepository);
 
         recipeBootstrap.onApplicationEvent(null);
     }

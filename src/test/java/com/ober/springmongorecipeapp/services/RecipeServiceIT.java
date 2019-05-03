@@ -5,9 +5,9 @@ import com.ober.springmongorecipeapp.commands.RecipeCommand;
 import com.ober.springmongorecipeapp.converters.RecipeCommandToRecipe;
 import com.ober.springmongorecipeapp.converters.RecipeToRecipeCommand;
 import com.ober.springmongorecipeapp.domain.Recipe;
-import com.ober.springmongorecipeapp.repositories.CategoryRepository;
-import com.ober.springmongorecipeapp.repositories.RecipeRepository;
-import com.ober.springmongorecipeapp.repositories.UnitOfMeasureRepository;
+import com.ober.springmongorecipeapp.repositories.reactive.CategoryReactiveRepository;
+import com.ober.springmongorecipeapp.repositories.reactive.RecipeReactiveRepository;
+import com.ober.springmongorecipeapp.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +27,13 @@ public class RecipeServiceIT {
     RecipeService recipeService;
 
     @Autowired
-    RecipeRepository recipeRepository;
+    RecipeReactiveRepository recipeRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    CategoryReactiveRepository categoryRepository;
 
     @Autowired
-    UnitOfMeasureRepository unitOfMeasureRepository;
+    UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
     @Autowired
     RecipeCommandToRecipe recipeCommandToRecipe;
@@ -43,9 +43,9 @@ public class RecipeServiceIT {
 
     @Before
     public void setUp() throws Exception {
-        recipeRepository.deleteAll();
-        unitOfMeasureRepository.deleteAll();
-        categoryRepository.deleteAll();
+        recipeRepository.deleteAll().block();
+        unitOfMeasureRepository.deleteAll().block();
+        categoryRepository.deleteAll().block();
 
         RecipeBootstrap recipeBootstrap = new RecipeBootstrap(categoryRepository, recipeRepository, unitOfMeasureRepository);
 
@@ -55,13 +55,13 @@ public class RecipeServiceIT {
     @Test
     public void testSaveOfDescription() throws Exception {
         // given
-        Iterable<Recipe> recipes = recipeRepository.findAll();
+        Iterable<Recipe> recipes = recipeRepository.findAll().collectList().block();
         Recipe testRecipe = recipes.iterator().next();
         RecipeCommand testRecipeCommand = recipeToRecipeCommand.convert(testRecipe);
 
         // when
         testRecipeCommand.setDescription(NEW_DESCRIPTION);
-        RecipeCommand savedRecipeCommand = recipeService.saveRecipeCommand(testRecipeCommand);
+        RecipeCommand savedRecipeCommand = recipeService.saveRecipeCommand(testRecipeCommand).block();
 
         // then
         assertEquals(NEW_DESCRIPTION, savedRecipeCommand.getDescription());
