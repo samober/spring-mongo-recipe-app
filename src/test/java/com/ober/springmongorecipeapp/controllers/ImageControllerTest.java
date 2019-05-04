@@ -62,6 +62,8 @@ public class ImageControllerTest {
     public void handleImagePost() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("imagefile", "testing.txt", "text/plain", "Recipe App".getBytes());
 
+        when(imageService.saveImageFile(anyString(), any())).thenReturn(Mono.empty());
+
         mockMvc.perform(multipart("/recipe/1/image").file(multipartFile))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", "/recipe/1/show"));
